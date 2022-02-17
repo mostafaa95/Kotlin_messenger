@@ -3,6 +3,7 @@ package com.example.kotlinmessenger.views
 import com.example.kotlinmessenger.R
 import com.example.kotlinmessenger.models.ChatMessage
 import com.example.kotlinmessenger.models.User
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -16,7 +17,12 @@ class LatestMessageRow(private val chatMessage: ChatMessage) : Item<ViewHolder>(
     var chatPartner : User? = null
     override fun bind(viewHolder: ViewHolder, position: Int) {
         viewHolder.itemView.message_content_textView_latest_message_row.text = chatMessage.text
-        val chatPartnerId : String = chatMessage.toId
+        val chatPartnerId : String
+        if(FirebaseAuth.getInstance().uid == chatMessage.fromId){
+            chatPartnerId = chatMessage.toId
+        } else{
+            chatPartnerId = chatMessage.fromId
+        }
         val ref = FirebaseDatabase.getInstance().getReference("/users/$chatPartnerId")
         ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
